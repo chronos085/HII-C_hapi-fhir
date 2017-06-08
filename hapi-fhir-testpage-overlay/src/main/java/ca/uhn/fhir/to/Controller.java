@@ -59,6 +59,8 @@ import ca.uhn.fhir.to.model.ResourceRequest;
 import ca.uhn.fhir.to.model.TransactionRequest;
 import ca.uhn.fhir.util.ExtensionConstants;
 
+import org.hspconsortium.platform.api.smart.LaunchOrchestrationSendEndpoint;
+
 @org.springframework.stereotype.Controller()
 public class Controller extends BaseController {
 	static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(Controller.class);
@@ -225,6 +227,13 @@ public class Controller extends BaseController {
 		return "home";
 	}
 
+	@RequestMapping(value = { "/test" })
+	public String actionTest(HttpServletRequest theServletRequest, final HomeRequest theRequest, final BindingResult theBindingResult, final ModelMap theModel) {
+		addCommonParams(theServletRequest, theRequest, theModel);
+		ourLog.info(theServletRequest.toString());
+		return "test123";
+	}
+
 	@RequestMapping(value = { "/page" })
 	public String actionPage(HttpServletRequest theReq, HomeRequest theRequest, BindingResult theBindingResult, ModelMap theModel) {
 		addCommonParams(theReq, theRequest, theModel);
@@ -241,7 +250,7 @@ public class Controller extends BaseController {
 				return "result";
 			}
 		}
-		
+
 		url = url.replace("&amp;", "&");
 
 		ResultType returnsResource = ResultType.BUNDLE;
