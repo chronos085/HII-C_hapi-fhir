@@ -34,6 +34,7 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
+import java.sql.SQLException;
 
 /**
  * This is the primary configuration file for the example server
@@ -61,15 +62,19 @@ public class FhirServerConfig extends BaseJavaConfigDstu3 {
 	 *
 	 * A URL to a remote database could also be placed here, along with login credentials and other properties supported by BasicDataSource.
 	 */
-	@Bean(destroyMethod = "close")
-	public DataSource dataSource() {
-		BasicDataSource retVal = new BasicDataSource();
-		retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-		retVal.setUrl("jdbc:derby:directory:target/jpaserver_derby_files;create=true");
-		retVal.setUsername("");
-		retVal.setPassword("");
-		return retVal;
-	}
+	 @Bean(destroyMethod = "close")
+ 		public DataSource dataSource() {
+	 		BasicDataSource retVal = new BasicDataSource();
+	 		try {
+	 			retVal.setDriver(new com.mysql.cj.jdbc.Driver());
+	 		} catch (SQLException e) {
+	 			e.printStackTrace();
+	 		}
+			retVal.setUrl("jdbc:mysql://localhost:3306/fhirdb");
+	 		retVal.setUsername("root");
+	 		retVal.setPassword("password");
+	 		return retVal;
+ 	}
 
 	@Bean()
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -96,6 +101,8 @@ public class FhirServerConfig extends BaseJavaConfigDstu3 {
 		extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
 		extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
 		extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+		extraProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+
 //		extraProperties.put("hibernate.search.default.worker.execution", "async");
 		return extraProperties;
 	}
